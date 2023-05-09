@@ -5,7 +5,6 @@
 
 
 std::vector <int> order_list;
-std::mutex order_list_access;
 
 
 enum FOOD
@@ -28,29 +27,34 @@ std::string r_food(int food)
 
 void order_func()
 {
+	std::mutex meals_mtx;
 	std::srand(std::time(nullptr));
 	int sec = std::rand() % 10 + 5;
 	std::this_thread::sleep_for(std::chrono::seconds(sec));
 	int food = std::rand() % 5;
 	std::cout << "Order on " << r_food(food) << std::endl;
-	order_list_access.lock();
+	meals_mtx.lock();
 	order_list.push_back(food);
-	order_list_access.unlock();
+	meals_mtx.unlock();
 }
 
 void cooking()
 {
+	std::mutex cooking_mtx;
 	int sec = std::rand() % 15 + 5;
 	std::this_thread::sleep_for(std::chrono::seconds(sec));
-	order_list_access.lock();
-	std::cout << order_list.back() << " cooking\n";
-	order_list_access.unlock();
+	cooking_mtx.lock();
+	std::cout << r_food(order_list.back()) << " cooking\n";
+	cooking_mtx.unlock();
 }
 
 void deliver()
 {
+	std::mutex delivered_mtx;
 	std::this_thread::sleep_for(std::chrono::seconds(30));
-	std::cout << "delivered\n";
+	delivered_mtx.lock();
+	std::cout << r_food(order_list.back()) <<" delivered\n";
+	delivered_mtx.unlock();
 }
 
 int main()
@@ -64,6 +68,7 @@ int main()
 		cook.join();
 		cur.join();
 	}
+	std::mutex order_list_access;
 	order_list_access.lock();
 	for (int i = 0; i < order_list.size(); i++)
 	{

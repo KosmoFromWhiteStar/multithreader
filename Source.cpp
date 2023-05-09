@@ -28,6 +28,7 @@ void way (int speed, std::string name)
 
 	list_access.lock();
 	win_list.push_back(name);
+	std::cout << win_list.back() << " is finished\n";
 	list_access.unlock();
 }
 

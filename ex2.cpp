@@ -8,6 +8,7 @@ std::mutex list_access;
 void rain_station(int sec, std::string name)
 {
 	std::this_thread::sleep_for(std::chrono::seconds(sec));
+	std::cout << "Train '" << name << "' is waiting." << std::endl;
 	list_access.lock();
 	std::string depart;
 	std::cout << name << " on station\n";
